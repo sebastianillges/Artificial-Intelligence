@@ -16,3 +16,15 @@ c) `h1(n) ≤ h2(n)` -> Wenn z.B. ein Stein an der falschen Position steht, ist 
 kann h2 nie kleiner sein als h1.
 Bei h2 lässt sich die "Qualität" des Zuges besser sehen. Es ist besser sichtbar, ob der Zug einen positiven Effekt
 hatte, also näher an das Ziel gekommen ist oder nicht. (Feingranularer)
+
+# Aufgabe 3
+d) Ja, weil A* den kürzesten Weg findet
+
+Bei einer monotonen Heuristik
+haben die von A* expandierten Knoten
+monoton steigende f-Werte.
+Damit ist für jeden expandierten
+Knoten n der gefundene Pfad nach
+n auch optimal.
+
+e) Vermutlich ein enormer Speicherverbrauch und lange Laufzeit, da exponentiell wachsend.

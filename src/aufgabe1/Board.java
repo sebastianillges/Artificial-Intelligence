@@ -2,9 +2,13 @@ package aufgabe1;
 
 import aufgabe1.IDFS;
 
+import java.lang.reflect.Array;
+import java.util.Deque;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.LinkedList;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
@@ -33,6 +37,13 @@ public class Board {
      * Generiert ein zufälliges Board.
      */
     public Board() {
+        List<Integer> list = new ArrayList<>(Arrays.stream(GOAL_ARR).boxed().toList());
+        java.util.Collections.shuffle(list);
+        this.board = list.stream().mapToInt(i -> i).toArray();
+        while (!parity()) {
+            java.util.Collections.shuffle(list);
+            this.board = list.stream().mapToInt(i -> i).toArray();
+        }
     }
 
     /**
@@ -50,7 +61,7 @@ public class Board {
         bld.append("(");
         for (int i = 0; i < dim; i++) {
             for (int j = 0; j < dim; j++) {
-                bld.append(board[i*dim + j]).append(",");
+                bld.append(board[i * dim + j]).append(",");
             }
             bld.append('\n');
         }
@@ -98,7 +109,6 @@ public class Board {
                     continue;
                 }
                 if (board[i] > following) {
-                    System.out.println(board[i] + ", " + following);
                     counter++;
                 }
             }
@@ -205,19 +215,28 @@ public class Board {
         Board b = new Board(new int[]{7, 2, 4, 5, 0, 6, 8, 3, 1});        // abc aus Aufgabenblatt
         Board goal = new Board(new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8});
 
-        System.out.println(b);
-        System.out.println(b.parity());
-        System.out.println(b.h1());
-        System.out.println(b.h2());
+        Board rand = new Board();
 
-        System.out.println(b);
+        System.out.println(rand);
+//        System.out.println(b);
+//        System.out.println(b.parity());
+//        System.out.println(b.h1());
+//        System.out.println(b.h2());
+//
+//        System.out.println(b);
+//
+//        for (Board child : b.possibleActions())
+//            System.out.println(child);
+//
+//        System.out.println(goal.isSolved());
 
-        for (Board child : b.possibleActions())
-            System.out.println(child);
+        Deque<Board> solve_IDFS = IDFS.idfs(b);
+        System.out.println(solve_IDFS.size());
+        System.out.println(solve_IDFS);
+        Deque<Board> solve_A_Star = A_Star.aStar(b);
+        System.out.println(solve_A_Star.size());
+//        System.out.println(solve_A_Star);
 
-        System.out.println(goal.isSolved());
-
-        System.out.println(IDFS.idfs(b));
     }
 }
 
