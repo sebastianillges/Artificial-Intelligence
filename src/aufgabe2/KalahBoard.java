@@ -1,4 +1,4 @@
-package kalah;
+package aufgabe2;
 
 import java.util.Arrays;
 import java.util.List;
@@ -52,7 +52,7 @@ public class KalahBoard {
     // Konsolen-Ein/Ausgabe:
     private static Scanner in = new Scanner(System.in);
     private static final String ANSI_BLUE = "\u001B[34m";
-    private static final String ANSI_BLACK = "\u001B[30m";
+    private static final String ANSI_BLACK = "\u001B[38m";
 
     /**
      * Konstruktor. Legt eine Kalah-Board mit NMulden mit je NSteine an.
@@ -414,5 +414,56 @@ public class KalahBoard {
             default:
                 return false;
         }
+    }
+
+    public int eval() {
+        return board[AKalah] - board[BKalah];
+    }
+
+    public int getMinimaxChoice(int depth) {
+        if (finished) {
+            return -1;
+        }
+        int v = Integer.MIN_VALUE;
+        int action = -1;
+        for (KalahBoard s : possibleActions()) {
+            int m;
+            if (getCurPlayer() == 'A') {
+                m = maxValue(depth, s);
+                if (m < v) {
+                    v = m;
+                    action = s.getLastPlay();
+                }
+            } else {
+                m = minValue(depth, s);
+                if (m > v) {
+                    v = m;
+                    action = s.getLastPlay();
+                }
+            }
+        }
+        return action;
+    }
+
+    private int maxValue(int depth, KalahBoard state) {
+        if (state.isFinished() || depth == 0) {
+            return state.eval();
+        }
+        int v = Integer.MIN_VALUE;
+        for (KalahBoard s : state.possibleActions()) {
+            v = Math.max(v, minValue(depth - 1, s));
+        }
+        return v;
+    }
+
+    private int minValue(int depth, KalahBoard state) {
+        if (state.isFinished() || depth == 0) {
+            return state.eval();
+        }
+        int v = Integer.MAX_VALUE;
+        for (KalahBoard s : state.possibleActions()) {
+            v = Math.min(v, maxValue(depth - 1, s));
+        }
+        return v;
     }
 }

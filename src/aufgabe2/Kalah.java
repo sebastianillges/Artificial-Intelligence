@@ -1,4 +1,4 @@
-package kalah;
+package aufgabe2;
 
 /**
  * Hauptprogramm für KalahMuster.
