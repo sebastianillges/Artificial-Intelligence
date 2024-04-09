@@ -468,13 +468,13 @@ public class KalahBoard {
         if (getCurPlayer() == 'B') {
             v = Integer.MAX_VALUE;
         }
+        this.callsToMax = 0;
+        this.callsToMin = 0;
         int action = -1;
         for (KalahBoard s : possibleActions()) {
             int m;
             if (getCurPlayer() == 'A') {
                 m = minValue_AB(depth, s, alpha, beta);
-                System.out.println("maxVal: " + m);
-                System.out.println("action: " + s.getLastPlay());
                 if (m > v) {
                     v = m;
                     action = s.getLastPlay();
@@ -482,9 +482,6 @@ public class KalahBoard {
                 alpha = Math.max(alpha, v);
             } else {
                 m = maxValue_AB(depth, s, alpha, beta);
-                System.out.println("minVal: " + m);
-                System.out.println("action: " + s.getLastPlay());
-
                 if (m < v) {
                     v = m;
                     action = s.getLastPlay();
@@ -492,15 +489,17 @@ public class KalahBoard {
                 beta = Math.min(beta, v);
             }
         }
+        System.out.println("-- maxValCalls: " + this.callsToMax);
+        System.out.println("-- minValCalls: " + this.callsToMin);
         return action;
 
     }
 
     private int maxValue(int depth, KalahBoard state) {
+        this.callsToMax++;
         if (state.isFinished() || depth == 0) {
             return state.eval();
         }
-        this.callsToMax++;
         int v = Integer.MIN_VALUE;
         for (KalahBoard s : state.possibleActions()) {
             v = Math.max(v, minValue(depth - 1, s));
@@ -509,10 +508,10 @@ public class KalahBoard {
     }
 
     private int minValue(int depth, KalahBoard state) {
+        this.callsToMin++;
         if (state.isFinished() || depth == 0) {
             return state.eval();
         }
-        this.callsToMin++;
         int v = Integer.MAX_VALUE;
         for (KalahBoard s : state.possibleActions()) {
             v = Math.min(v, maxValue(depth - 1, s));
@@ -521,6 +520,7 @@ public class KalahBoard {
     }
 
     private int maxValue_AB(int depth, KalahBoard state, int alpha, int beta) {
+        this.callsToMax++;
         if (state.isFinished() || depth == 0) {
             return state.eval();
         }
@@ -538,6 +538,7 @@ public class KalahBoard {
     }
 
     private int minValue_AB(int depth, KalahBoard state, int alpha, int beta) {
+        this.callsToMin++;
         if (state.isFinished() || depth == 0) {
             return state.eval();
         }
