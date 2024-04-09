@@ -15,7 +15,7 @@ public class Kalah {
      * @param args wird nicht verwendet.
      */
     public static void main(String[] args) {
-        testExample();
+        //testExample();
         //testHHGame();
         testMiniMaxAndAlphaBetaWithGivenBoard();
         //testHumanMiniMax();
@@ -65,8 +65,11 @@ public class Kalah {
             if (kalahBd.getCurPlayer() == 'A') {
                 // Berechnen Sie für A eine Aktion mit Ihrem Verfahren und geben Sie die Aktion auf der Konsole aus.
                 // ...
+                action = kalahBd.getMinimaxChoice(7);
             }
-            action = kalahBd.readAction();
+            else {
+                action = kalahBd.readAction();
+            }
             kalahBd.move(action);
             kalahBd.print();
         }
