@@ -414,12 +414,12 @@ public class KalahBoard {
     }
 
     public int eval() {
-        int r = 0;
+        /* int r = 0;
         for (int i = 0; i < NMulden - 2; i++) {
             r += board[i] - board[i + NMulden];
         }
-        return r + board[AKalah] * 2 - board[BKalah] * 2;
-        //return board[AKalah] - board[BKalah];
+        return r + board[AKalah] * 2 - board[BKalah] * 2; */
+        return board[AKalah] - board[BKalah];
     }
 
     public int getMinimaxChoice(int depth) {
@@ -495,6 +495,44 @@ public class KalahBoard {
 
     }
 
+    public int sortedAlphaBetaSearch(int depth) {
+        if (finished) {
+            return -1;
+        }
+        int alpha = Integer.MIN_VALUE;
+        int beta = Integer.MAX_VALUE;
+        int v = Integer.MIN_VALUE;
+        if (getCurPlayer() == 'B') {
+            v = Integer.MAX_VALUE;
+        }
+        this.callsToMax = 0;
+        this.callsToMin = 0;
+        int action = -1;
+        List<KalahBoard> actions = possibleActions();
+        actions.sort(Comparator.comparingInt(KalahBoard::eval).reversed());
+        for (KalahBoard s : actions) {
+            int m;
+            if (getCurPlayer() == 'A') {
+                m = sortedMinValue_AB(depth, s, alpha, beta);
+                if (m > v) {
+                    v = m;
+                    action = s.getLastPlay();
+                }
+                alpha = Math.max(alpha, v);
+            } else {
+                m = sortedMaxValue_AB(depth, s, alpha, beta);
+                if (m < v) {
+                    v = m;
+                    action = s.getLastPlay();
+                }
+                beta = Math.min(beta, v);
+            }
+        }
+        System.out.println("-- maxValCalls: " + this.callsToMax);
+        System.out.println("-- minValCalls: " + this.callsToMin);
+        return action;
+    }
+
     private int maxValue(int depth, KalahBoard state) {
         this.callsToMax++;
         if (state.isFinished() || depth == 0) {
@@ -525,9 +563,7 @@ public class KalahBoard {
             return state.eval();
         }
         int v = Integer.MIN_VALUE;
-        List<KalahBoard> actions = state.possibleActions();
-        actions.sort(Comparator.comparingInt(KalahBoard::eval));
-        for (KalahBoard s : actions) {
+        for (KalahBoard s : state.possibleActions()) {
             v = Math.max(v, minValue_AB(depth - 1, s, alpha, beta));
             if (v >= beta) {
                 return v;
@@ -543,8 +579,42 @@ public class KalahBoard {
             return state.eval();
         }
         int v = Integer.MAX_VALUE;
+        for (KalahBoard s : state.possibleActions()) {
+            v = Math.min(v, maxValue_AB(depth - 1, s, alpha, beta));
+            if (v <= alpha) {
+                return v;
+            }
+            beta = Math.min(beta, v);
+        }
+        return v;
+    }
+
+    private int sortedMaxValue_AB(int depth, KalahBoard state, int alpha, int beta) {
+        this.callsToMax++;
+        if (state.isFinished() || depth == 0) {
+            return state.eval();
+        }
+        int v = Integer.MIN_VALUE;
         List<KalahBoard> actions = state.possibleActions();
         actions.sort(Comparator.comparingInt(KalahBoard::eval).reversed());
+        for (KalahBoard s : actions) {
+            v = Math.max(v, minValue_AB(depth - 1, s, alpha, beta));
+            if (v >= beta) {
+                return v;
+            }
+            alpha = Math.max(alpha, v);
+        }
+        return v;
+    }
+
+    private int sortedMinValue_AB(int depth, KalahBoard state, int alpha, int beta) {
+        this.callsToMin++;
+        if (state.isFinished() || depth == 0) {
+            return state.eval();
+        }
+        int v = Integer.MAX_VALUE;
+        List<KalahBoard> actions = state.possibleActions();
+        actions.sort(Comparator.comparingInt(KalahBoard::eval));
         for (KalahBoard s : actions) {
             v = Math.min(v, maxValue_AB(depth - 1, s, alpha, beta));
             if (v <= alpha) {

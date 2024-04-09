@@ -17,9 +17,9 @@ public class Kalah {
     public static void main(String[] args) {
         //testExample();
         //testHHGame();
-        testMiniMaxAndAlphaBetaWithGivenBoard();
+        //testMiniMaxAndAlphaBetaWithGivenBoard();
         //testHumanMiniMax();
-        //testHumanMiniMaxAndAlphaBeta();
+        testHumanAlphaBeta();
     }
 
     /**
@@ -65,9 +65,64 @@ public class Kalah {
             if (kalahBd.getCurPlayer() == 'A') {
                 // Berechnen Sie für A eine Aktion mit Ihrem Verfahren und geben Sie die Aktion auf der Konsole aus.
                 // ...
-                action = kalahBd.getMinimaxChoice(14);
-                //action = kalahBd.alphaBetaSearch(20);
-                System.out.println(kalahBd.getCurPlayer() + " spielt Mulde: " + action);
+                System.out.println("-------------------- MINIMAX -------------------");
+                //int actionMinimax = kalahBd.getMinimaxChoice(16);
+                //System.out.println("Minimax choice: " + actionMinimax);
+                System.out.println("-------------------- ALPHA-BETA -------------------");
+                int actionAlphaBeta = kalahBd.alphaBetaSearch(20);
+                System.out.println("Alpha-Beta choice: " + actionAlphaBeta);
+                System.out.println("-------------------- SORTED ALPHA-BETA ---------------------");
+                int actionSortedAlphaBeta = kalahBd.sortedAlphaBetaSearch(20);
+                System.out.println("Sorted Alpha-Beta choice: " + actionSortedAlphaBeta);
+                action = actionSortedAlphaBeta;
+            }
+            else {
+                action = kalahBd.readAction();
+            }
+            kalahBd.move(action);
+            kalahBd.print();
+        }
+
+        System.out.println("\n" + ANSI_BLUE + "GAME OVER");
+    }
+
+    public static void testHumanMiniMax() {
+        KalahBoard kalahBd = new KalahBoard();
+        kalahBd.print();
+
+        while (!kalahBd.isFinished()) {
+            int action;
+            if (kalahBd.getCurPlayer() == 'A') {
+                // Berechnen Sie für A eine Aktion mit Ihrem Verfahren und geben Sie die Aktion auf der Konsole aus.
+                // ...
+                System.out.println("-------------------- MINIMAX -------------------");
+                int actionMinimax = kalahBd.getMinimaxChoice(14);
+                System.out.println("Minimax choice: " + actionMinimax);
+                action = actionMinimax;
+            }
+            else {
+                action = kalahBd.readAction();
+            }
+            kalahBd.move(action);
+            kalahBd.print();
+        }
+
+        System.out.println("\n" + ANSI_BLUE + "GAME OVER");
+    }
+
+    public static void testHumanAlphaBeta() {
+        KalahBoard kalahBd = new KalahBoard();
+        kalahBd.print();
+
+        while (!kalahBd.isFinished()) {
+            int action;
+            if (kalahBd.getCurPlayer() == 'A') {
+                // Berechnen Sie für A eine Aktion mit Ihrem Verfahren und geben Sie die Aktion auf der Konsole aus.
+                // ...
+                System.out.println("-------------------- ALPHA-BETA -------------------");
+                int actionAlphaBeta = kalahBd.sortedAlphaBetaSearch(14);
+                System.out.println("Alpha-Beta choice: " + actionAlphaBeta);
+                action = actionAlphaBeta;
             }
             else {
                 action = kalahBd.readAction();
