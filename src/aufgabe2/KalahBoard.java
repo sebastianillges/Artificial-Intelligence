@@ -1,9 +1,7 @@
 package aufgabe2;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Scanner;
+import javax.swing.*;
+import java.util.*;
 
 /**
  * Klasse KalahBoard
@@ -23,7 +21,7 @@ public class KalahBoard {
     public static final char BPlayer = 'B'; // Spieler B
 
     /*
-     * Board als Feld. 
+     * Board als Feld.
      * APlayer: 0,1,2,3,4,5    und A-Kalah 6
      * BPlayer: 7,8,9,10,11,12 und B-Kalah 13
      */
@@ -54,6 +52,9 @@ public class KalahBoard {
     private static final String ANSI_BLUE = "\u001B[34m";
     private static final String ANSI_BLACK = "\u001B[38m";
 
+    private int callsToMax = 0;
+    private int callsToMin = 0;
+
     /**
      * Konstruktor. Legt eine Kalah-Board mit NMulden mit je NSteine an.
      */
@@ -70,7 +71,7 @@ public class KalahBoard {
     /**
      * Konstruktor.
      *
-     * @param b Board als Feld.
+     * @param b      Board als Feld.
      * @param player beginnender Spieler.
      */
     public KalahBoard(int[] b, char player) {
@@ -91,7 +92,6 @@ public class KalahBoard {
     }
 
     /**
-     *
      * Prüft, ob Partie zu Ende ist.
      *
      * @return true, falls Partie zu Ende ist.
@@ -101,7 +101,6 @@ public class KalahBoard {
     }
 
     /**
-     *
      * Prüft, ob nächster Zug ein Bonus-Zug ist.
      *
      * @return true, falls nächster Zug ein Bonus-Zug ist.
@@ -111,7 +110,6 @@ public class KalahBoard {
     }
 
     /**
-     *
      * Aktueller Spieler. Ist mit dem nächsten Zug (move) dran.
      *
      * @return Aktueller Spieler.
@@ -121,7 +119,6 @@ public class KalahBoard {
     }
 
     /**
-     *
      * Liefert letzten Zug zurück (Nummer der Mulde, die gespielt wurde). Wird
      * gesetzt, nachdem move ausgeführt wurde.
      *
@@ -253,15 +250,15 @@ public class KalahBoard {
      * @param mulde Mulde, die gespielt wird.
      */
     public void move(int mulde) {
-		if (curPlayer == APlayer && mulde >= AKalah)
-			throw new IllegalArgumentException();
-		if (curPlayer == BPlayer && (mulde <= AKalah || mulde >= BKalah))
-			throw new IllegalArgumentException();
-		
-		int n = board[mulde];
-		if (n <= 0) 
-			throw new IllegalArgumentException();
-		
+        if (curPlayer == APlayer && mulde >= AKalah)
+            throw new IllegalArgumentException();
+        if (curPlayer == BPlayer && (mulde <= AKalah || mulde >= BKalah))
+            throw new IllegalArgumentException();
+
+        int n = board[mulde];
+        if (n <= 0)
+            throw new IllegalArgumentException();
+
         board[mulde] = 0;
         lastPlay = mulde;
         int j = mulde;
@@ -287,24 +284,24 @@ public class KalahBoard {
 
         // Bonuszug:
         if (curPlayer == APlayer && j == AKalah) {
-			// Spieler bekommt Extra-Runde
-            bonus = true; 
-			// Prüfen ob noch Zug möglich:
-			finished = finish();
-            return;
-        }
-		if (curPlayer == BPlayer && j == BKalah) {
             // Spieler bekommt Extra-Runde
-            bonus = true; 
-			// Prüfen ob noch Zug möglich:
-			finished = finish();
+            bonus = true;
+            // Prüfen ob noch Zug möglich:
+            finished = finish();
             return;
         }
-		
-		// Anderer Spieler an der Reihe 
-		changePlayer();
-        bonus = false; 
-		finished = finish();
+        if (curPlayer == BPlayer && j == BKalah) {
+            // Spieler bekommt Extra-Runde
+            bonus = true;
+            // Prüfen ob noch Zug möglich:
+            finished = finish();
+            return;
+        }
+
+        // Anderer Spieler an der Reihe
+        changePlayer();
+        bonus = false;
+        finished = finish();
     }
 
     private boolean erorbern(int mulde) {
@@ -348,8 +345,8 @@ public class KalahBoard {
         if (this.curPlayer == APlayer) {
             // Prüfe, ob  A-Player nicht mehr spielen kann:
             for (int i = AStart; i < AStart + NMulden; i++) {
-                if (board[i] != 0) 
-                    return false;      
+                if (board[i] != 0)
+                    return false;
             }
             // Gegenerische Steine in Kalah legen:
             int s = 0;
@@ -387,7 +384,7 @@ public class KalahBoard {
         while (in.hasNextLine()) {
             String line = in.nextLine();
             if (line.equals("quit")) {
-                System.exit(0);	// exit
+                System.exit(0);    // exit
             }
             int action;
             try {
@@ -417,7 +414,12 @@ public class KalahBoard {
     }
 
     public int eval() {
-        return board[AKalah] - board[BKalah];
+        int r = 0;
+        for (int i = 0; i < NMulden - 2; i++) {
+            r += board[i] - board[i + NMulden];
+        }
+        return r + board[AKalah] * 2 - board[BKalah] * 2;
+        //return board[AKalah] - board[BKalah];
     }
 
     public int getMinimaxChoice(int depth) {
@@ -425,44 +427,129 @@ public class KalahBoard {
             return -1;
         }
         int v = Integer.MIN_VALUE;
+        if (getCurPlayer() == 'B') {
+            v = Integer.MAX_VALUE;
+        }
         int action = -1;
+        int maxCalls = 0;
+        int minCalls = 0;
         for (KalahBoard s : possibleActions()) {
             int m;
             if (getCurPlayer() == 'A') {
-                m = maxValue(depth, s);
-                if (m < v) {
+                m = minValue(depth, s, maxCalls, minCalls);
+
+                if (m > v) {
                     v = m;
                     action = s.getLastPlay();
                 }
             } else {
-                m = minValue(depth, s);
-                if (m > v) {
+                m = maxValue(depth, s, maxCalls, minCalls);
+                System.out.println("minVal: " + m);
+                System.out.println("action: " + s.getLastPlay());
+
+                if (m < v) {
                     v = m;
                     action = s.getLastPlay();
                 }
             }
         }
+        System.out.println("-- maxCalls: " + maxCalls);
+        System.out.println("-- minCalls: " + minCalls);
         return action;
     }
 
-    private int maxValue(int depth, KalahBoard state) {
+    public int alphaBetaSearch(int depth) {
+        if (finished) {
+            return -1;
+        }
+        int alpha = Integer.MIN_VALUE;
+        int beta = Integer.MAX_VALUE;
+        int v = Integer.MIN_VALUE;
+        if (getCurPlayer() == 'B') {
+            v = Integer.MAX_VALUE;
+        }
+        int action = -1;
+        for (KalahBoard s : possibleActions()) {
+            int m;
+            if (getCurPlayer() == 'A') {
+                m = minValue_AB(depth, s, alpha, beta);
+                System.out.println("maxVal: " + m);
+                System.out.println("action: " + s.getLastPlay());
+                if (m > v) {
+                    v = m;
+                    action = s.getLastPlay();
+                }
+                alpha = Math.max(alpha, v);
+            } else {
+                m = maxValue_AB(depth, s, alpha, beta);
+                System.out.println("minVal: " + m);
+                System.out.println("action: " + s.getLastPlay());
+
+                if (m < v) {
+                    v = m;
+                    action = s.getLastPlay();
+                }
+                beta = Math.min(beta, v);
+            }
+        }
+        return action;
+
+    }
+
+    private int maxValue(int depth, KalahBoard state, int maxCalls, int minCalls) {
         if (state.isFinished() || depth == 0) {
             return state.eval();
         }
+        maxCalls += 1;
         int v = Integer.MIN_VALUE;
         for (KalahBoard s : state.possibleActions()) {
-            v = Math.max(v, minValue(depth - 1, s));
+            v = Math.max(v, minValue(depth - 1, s, maxCalls, minCalls));
         }
         return v;
     }
 
-    private int minValue(int depth, KalahBoard state) {
+    private int minValue(int depth, KalahBoard state, int maxCalls, int minCalls) {
+        if (state.isFinished() || depth == 0) {
+            return state.eval();
+        }
+        minCalls += 1;
+        int v = Integer.MAX_VALUE;
+        for (KalahBoard s : state.possibleActions()) {
+            v = Math.min(v, maxValue(depth - 1, s, maxCalls, minCalls));
+        }
+        return v;
+    }
+
+    private int maxValue_AB(int depth, KalahBoard state, int alpha, int beta) {
+        if (state.isFinished() || depth == 0) {
+            return state.eval();
+        }
+        int v = Integer.MIN_VALUE;
+        List<KalahBoard> actions = state.possibleActions();
+        actions.sort(Comparator.comparingInt(KalahBoard::eval));
+        for (KalahBoard s : actions) {
+            v = Math.max(v, minValue_AB(depth - 1, s, alpha, beta));
+            if (v >= beta) {
+                return v;
+            }
+            alpha = Math.max(alpha, v);
+        }
+        return v;
+    }
+
+    private int minValue_AB(int depth, KalahBoard state, int alpha, int beta) {
         if (state.isFinished() || depth == 0) {
             return state.eval();
         }
         int v = Integer.MAX_VALUE;
-        for (KalahBoard s : state.possibleActions()) {
-            v = Math.min(v, maxValue(depth - 1, s));
+        List<KalahBoard> actions = state.possibleActions();
+        actions.sort(Comparator.comparingInt(KalahBoard::eval).reversed());
+        for (KalahBoard s : actions) {
+            v = Math.min(v, maxValue_AB(depth - 1, s, alpha, beta));
+            if (v <= alpha) {
+                return v;
+            }
+            beta = Math.min(beta, v);
         }
         return v;
     }

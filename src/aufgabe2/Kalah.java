@@ -66,10 +66,12 @@ public class Kalah {
                 // Berechnen Sie für A eine Aktion mit Ihrem Verfahren und geben Sie die Aktion auf der Konsole aus.
                 // ...
                 action = kalahBd.getMinimaxChoice(7);
+                //action = kalahBd.alphaBetaSearch(20);
             }
             else {
                 action = kalahBd.readAction();
             }
+            System.out.println(kalahBd.getCurPlayer() + " spielt Mulde: " + action);
             kalahBd.move(action);
             kalahBd.print();
         }
