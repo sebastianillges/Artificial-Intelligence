@@ -431,19 +431,19 @@ public class KalahBoard {
             v = Integer.MAX_VALUE;
         }
         int action = -1;
-        int maxCalls = 0;
-        int minCalls = 0;
+        this.callsToMax = 0;
+        this.callsToMin = 0;
         for (KalahBoard s : possibleActions()) {
             int m;
             if (getCurPlayer() == 'A') {
-                m = minValue(depth, s, maxCalls, minCalls);
+                m = minValue(depth, s);
 
                 if (m > v) {
                     v = m;
                     action = s.getLastPlay();
                 }
             } else {
-                m = maxValue(depth, s, maxCalls, minCalls);
+                m = maxValue(depth, s);
                 System.out.println("minVal: " + m);
                 System.out.println("action: " + s.getLastPlay());
 
@@ -453,8 +453,8 @@ public class KalahBoard {
                 }
             }
         }
-        System.out.println("-- maxCalls: " + maxCalls);
-        System.out.println("-- minCalls: " + minCalls);
+        System.out.println("-- maxValCalls: " + this.callsToMax);
+        System.out.println("-- minValCalls: " + this.callsToMin);
         return action;
     }
 
@@ -496,26 +496,26 @@ public class KalahBoard {
 
     }
 
-    private int maxValue(int depth, KalahBoard state, int maxCalls, int minCalls) {
+    private int maxValue(int depth, KalahBoard state) {
         if (state.isFinished() || depth == 0) {
             return state.eval();
         }
-        maxCalls += 1;
+        this.callsToMax++;
         int v = Integer.MIN_VALUE;
         for (KalahBoard s : state.possibleActions()) {
-            v = Math.max(v, minValue(depth - 1, s, maxCalls, minCalls));
+            v = Math.max(v, minValue(depth - 1, s));
         }
         return v;
     }
 
-    private int minValue(int depth, KalahBoard state, int maxCalls, int minCalls) {
+    private int minValue(int depth, KalahBoard state) {
         if (state.isFinished() || depth == 0) {
             return state.eval();
         }
-        minCalls += 1;
+        this.callsToMin++;
         int v = Integer.MAX_VALUE;
         for (KalahBoard s : state.possibleActions()) {
-            v = Math.min(v, maxValue(depth - 1, s, maxCalls, minCalls));
+            v = Math.min(v, maxValue(depth - 1, s));
         }
         return v;
     }
