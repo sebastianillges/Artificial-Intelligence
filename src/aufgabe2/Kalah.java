@@ -72,7 +72,7 @@ public class Kalah {
                 int actionAlphaBeta = kalahBd.alphaBetaSearch(20);
                 System.out.println("Alpha-Beta choice: " + actionAlphaBeta);
                 System.out.println("-------------------- SORTED ALPHA-BETA ---------------------");
-                int actionSortedAlphaBeta = kalahBd.sortedAlphaBetaSearch(14);
+                int actionSortedAlphaBeta = kalahBd.sortedAlphaBetaSearch(20);
                 System.out.println("Sorted Alpha-Beta choice: " + actionSortedAlphaBeta);
                 action = actionSortedAlphaBeta;
             }
