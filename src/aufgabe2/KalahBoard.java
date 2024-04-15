@@ -589,9 +589,9 @@ public class KalahBoard {
         List<KalahBoard> actions = state.possibleActions();
         if (state.getCurPlayer() == BPlayer) {
             v = Integer.MAX_VALUE;
-            actions.sort(Comparator.comparingInt(KalahBoard::eval).reversed());
-        } else {
             actions.sort(Comparator.comparingInt(KalahBoard::eval));
+        } else {
+            actions.sort(Comparator.comparingInt(KalahBoard::eval).reversed());
         }
 
         for (KalahBoard s : actions) {
