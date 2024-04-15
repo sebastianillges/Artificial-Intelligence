@@ -17,9 +17,9 @@ public class Kalah {
     public static void main(String[] args) {
         //testExample();
         //testHHGame();
-        //testMiniMaxAndAlphaBetaWithGivenBoard();
+        testMiniMaxAndAlphaBetaWithGivenBoard();
         //testHumanMiniMax();
-        testHumanAlphaBeta();
+        //testHumanAlphaBeta();
     }
 
     /**
@@ -72,7 +72,7 @@ public class Kalah {
                 int actionAlphaBeta = kalahBd.alphaBetaSearch(20);
                 System.out.println("Alpha-Beta choice: " + actionAlphaBeta);
                 System.out.println("-------------------- SORTED ALPHA-BETA ---------------------");
-                int actionSortedAlphaBeta = kalahBd.sortedAlphaBetaSearch(20);
+                int actionSortedAlphaBeta = kalahBd.sortedAlphaBetaSearch(14);
                 System.out.println("Sorted Alpha-Beta choice: " + actionSortedAlphaBeta);
                 action = actionSortedAlphaBeta;
             }
