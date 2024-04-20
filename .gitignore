@@ -51,6 +51,9 @@ cmake-build-*/
 
 # IntelliJ
 out/
+misc.xml
+other.xml
+workspace.xml
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/
