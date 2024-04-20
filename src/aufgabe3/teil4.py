@@ -2,7 +2,6 @@ from constraint import Problem
 
 rechtecke = {"1": (6, 4), "2": (5, 2), "3": (2, 2), "4": (3, 2), "5": (1, 8), "6": (1, 4)}
 
-
 def no_overlap(x1, y1, w1, h1, x2, y2, w2, h2):
     """ Überprüft, ob sich zwei Rechtecke nicht überschneiden. """
     return x1 + w1 <= x2 or x2 + w2 <= x1 or y1 + h1 <= y2 or y2 + h2 <= y1
@@ -27,7 +26,6 @@ def solve():
 
         positionen[rechteck] = pos_list
         problem.addVariable(rechteck, pos_list)
-    print(positionen)
 
 
     # for i in positionen.keys():
@@ -53,8 +51,19 @@ def solve():
 
 def main():
     solutions = solve()
-    # Print the solutions
-    print(solutions)
+
+    print("Number of solutions:", len(solutions))
+
+    grid = [[0 for _ in range(7)] for _ in range(8)]
+    for solution in solutions:
+        for rechteck, (x, y, w, h) in solution.items():
+            for i in range(x, x + w):
+                for j in range(y, y + h):
+                    grid[j][i] = rechteck
+        print("Solution:")
+        for row in grid:
+            print(row)
+
 
 
 
