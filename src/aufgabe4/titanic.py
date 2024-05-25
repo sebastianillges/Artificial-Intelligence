@@ -10,6 +10,9 @@ from sklearn.ensemble import RandomForestClassifier
 # Klasse des Tickets (Pclass). Wenden Sie diese Regel auf die Validierungsdaten an. Wie gut ist die Genauigkeit (Anteil
 # der korrekten Klassifikationen) auf den Validierungsdaten?
 
+pd.set_option('display.max_columns', None)
+pd.set_option('display.width', None)
+
 # Laden der Trainingsdaten
 train_val = pd.read_csv('data/train.csv')
 
@@ -60,6 +63,7 @@ print(f'Genauigkeit der logistischen Regression basierend auf Pclass: {accuracy_
 # können (was passiert da?)
 val_data['Age'] = val_data['Age'].fillna(train_data['Age'].median(skipna=True))
 train_data['Age'] = train_data['Age'].fillna(train_data['Age'].median(skipna=True))
+# -> die Daten werden mit mittelwerten gefüllt
 
 # d.ii) Kategorische Variable
 # Verwenden Sie die Funktion pd.get_dummies um die Variablen 'Pclass' and 'Sex' in numerische Werte umzuwandeln. Führen
@@ -67,6 +71,8 @@ train_data['Age'] = train_data['Age'].fillna(train_data['Age'].median(skipna=Tru
 # Umwandeln von 'Pclass' und 'Sex' in numerische Werte
 train_data = pd.get_dummies(train_data, columns=['Pclass', 'Sex'], drop_first=True)
 val_data = pd.get_dummies(val_data, columns=['Pclass', 'Sex'], drop_first=True)
+# -> aus einem kategorischen Wert werden mehrere binäre Werte. Also aus PCklass 1, 2, 3 werden 2 Spalten mit 0 und 1
+# -> aus dem Geschlecht wird eine Spalte Sex_male mit 0 und 1, 0 impliziert weiblich, 1 impliziert männlich
 
 # Logistische Regression trainieren
 logreg = LogisticRegression()
