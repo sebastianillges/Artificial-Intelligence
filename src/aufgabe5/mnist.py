@@ -37,16 +37,24 @@ def plot_history(hist, name, subplot_index, total_subplots):
     plt.legend(['train', 'valid'], loc='upper right', facecolor='black')
 
 
-def eval_model(history, names):
+
+def eval_model(model, history, names, cnn=False):
     plt.style.use('dark_background')
 
+    test_x = X_test_flat
+    if cnn:
+        test_x = X_test
+    
     if isinstance(history, History):
         plt.figure(figsize=(12, 4))
         plt.title()
         plot_history(history, names[0], 1, 1)
         plt.tight_layout()
-        plt.savefig(f"../aufgabe5/output/{names[0]}.png", dpi=300)
         plt.show()
+        pred=model[0].predict(test_x )
+        print(confusion_matrix(np.argmax(Y_test,axis=1),np.argmax(pred,axis=1)))
+        acc_fc_orig = np.sum(np.argmax(Y_test,axis=1)==np.argmax(pred,axis=1))/len(pred)
+        print("Accuracy = " , acc_fc_orig)
     elif isinstance(history, list) and all(isinstance(item, History) for item in history):
         num_histories = len(history)
         if len(names) != num_histories:
@@ -54,8 +62,11 @@ def eval_model(history, names):
         plt.figure(figsize=(12, 4 * num_histories))
         for i, hist in enumerate(history):
             plot_history(hist, names[i], 2 * i + 1, num_histories)
+            pred=model[i].predict(test_x )
+            print(confusion_matrix(np.argmax(Y_test,axis=1),np.argmax(pred,axis=1)))
+            acc_fc_orig = np.sum(np.argmax(Y_test,axis=1)==np.argmax(pred,axis=1))/len(pred)
+            print(f"Accuracy of ", names[i], "= " , acc_fc_orig)
         plt.tight_layout()
-        plt.savefig(f"../aufgabe5/output/{'_'.join(names)}_multiple.png", dpi=300)
         plt.show()
     else:
         raise ValueError("Die Eingabe muss entweder ein History-Objekt oder eine Liste von History-Objekten sein.")
@@ -217,3 +228,30 @@ print("Changing the activation function from sigmoid to relu has a positive effe
       Especially on the accuracy of the training data and a bit on the validation data.\n\
       The more hidden layers we add, the more unstable does the model get. Also the accuracy is not improved.\n\
       Also increasing the number of epochs has a negative effect on all models using the relu function.")
+
+
+
+
+model_cnn = Sequential()
+model_cnn.add(Input(shape=(28,28,1)))
+model_cnn.add(Convolution2D(32, 3, padding="same"))
+model_cnn.add(MaxPooling2D(pool_size=2))
+model_cnn.add(Convolution2D(64, 3))
+model_cnn.add(MaxPooling2D(pool_size=2))
+model_cnn.add(Flatten())
+model_cnn.add(Dense(10))
+model_cnn.add(Activation("softmax"))
+
+model_cnn.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+model_cnn.summary()
+
+
+
+print(X_train.shape)
+history_cnn = model_cnn.fit(X_train, Y_train, batch_size=128, epochs=10, verbose=2,
+                                validation_data=(X_val, Y_val))
+
+
+eval_model([model_cnn], [history_cnn], ["cnn"], cnn=True)
+
+
