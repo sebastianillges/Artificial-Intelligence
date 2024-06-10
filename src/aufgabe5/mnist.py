@@ -37,7 +37,6 @@ def plot_history(hist, name, subplot_index, total_subplots):
     plt.legend(['train', 'valid'], loc='upper right', facecolor='black')
 
 
-
 def eval_model(model, history, names, cnn=False):
     plt.style.use('dark_background')
 
@@ -50,6 +49,7 @@ def eval_model(model, history, names, cnn=False):
         plt.title()
         plot_history(history, names[0], 1, 1)
         plt.tight_layout()
+        plt.savefig(f"../aufgabe5/output/{names[0]}.png", dpi=300)
         plt.show()
         pred=model[0].predict(test_x )
         print(confusion_matrix(np.argmax(Y_test,axis=1),np.argmax(pred,axis=1)))
@@ -67,9 +67,8 @@ def eval_model(model, history, names, cnn=False):
             acc_fc_orig = np.sum(np.argmax(Y_test,axis=1)==np.argmax(pred,axis=1))/len(pred)
             print(f"Accuracy of ", names[i], "= " , acc_fc_orig)
         plt.tight_layout()
+        plt.savefig(f"../aufgabe5/output/{'_'.join(names)}_multiple.png", dpi=300)
         plt.show()
-    else:
-        raise ValueError("Die Eingabe muss entweder ein History-Objekt oder eine Liste von History-Objekten sein.")
 
 
 print(
