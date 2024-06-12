@@ -1,3 +1,5 @@
+import os
+
 import tensorflow as tf
 from keras.src.layers import BatchNormalization
 
@@ -208,8 +210,10 @@ history_relu5 = model_relu5.fit(X_train_flat, Y_train, batch_size=128, epochs=10
 model_cnn = Sequential()
 model_cnn.add(Input(shape=(28, 28, 1)))
 model_cnn.add(Convolution2D(32, 3, padding="same"))
+model_cnn.add(Activation("relu"))
 model_cnn.add(MaxPooling2D(pool_size=2))
 model_cnn.add(Convolution2D(64, 3))
+model_cnn.add(Activation("relu"))
 model_cnn.add(MaxPooling2D(pool_size=2))
 model_cnn.add(Flatten())
 model_cnn.add(Dense(10))
